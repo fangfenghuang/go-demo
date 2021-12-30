@@ -21,7 +21,7 @@ func ClearAllNetworkPolicy() error {
 	}
 	//ffmt.Puts(nps)
 	for _, np := range nps.Items {
-		klog.V(3).Info("del np [%s/%s]", np.Name, np.Namespace)
+		klog.Infof("del np [%s/%s]", np.Name, np.Namespace)
 		_, err := ClientV3.NetworkPolicies().Delete(Ctx, np.Namespace, np.Name, options.DeleteOptions{})
 		if err != nil {
 			klog.Errorln(err)
@@ -35,7 +35,7 @@ func ClearAllNetworkPolicy() error {
 	}
 	//ffmt.Puts(gnps)
 	for _, gnp := range gnps.Items {
-		klog.V(3).Info("del gnp [%s]", gnp.Name)
+		klog.Infof("del gnp [%s]", gnp.Name)
 		_, err := ClientV3.GlobalNetworkPolicies().Delete(Ctx, gnp.Name, options.DeleteOptions{})
 		if err != nil {
 			klog.Errorln(err)
@@ -49,7 +49,7 @@ func ClearAllNetworkPolicy() error {
 	}
 	//ffmt.Puts(gnps)
 	for _, gns := range gnss.Items {
-		klog.V(3).Info("del gns [%s]", gns.Name)
+		klog.Infof("del gns [%s]", gns.Name)
 		_, err := ClientV3.GlobalNetworkSets().Delete(Ctx, gns.Name, options.DeleteOptions{})
 		if err != nil {
 			klog.Errorln(err)
@@ -63,7 +63,7 @@ func ClearAllNetworkPolicy() error {
 //一键清空所有网络策略及节点标签
 func CleanUp() error {
 	//删除所有网络策略
-	klog.V(3).Info("CleanUp...")
+	klog.Infoln("CleanUp...")
 	err := ClearAllNetworkPolicy()
 	if err != nil {
 		return err
@@ -76,7 +76,7 @@ func CleanUp() error {
 	for _, n := range allNs.Items {
 		for _, k := range conf.LabelKeys {
 			if _, ok := n.Labels[k]; ok {
-				klog.V(3).Info("rm ns %s label :%s", n.Name, k)
+				klog.Infof("rm ns %s label :%s", n.Name, k)
 				if err := k8sclient.DeleteNamespaceLabels(n.Name, k); err != nil {
 					return err
 				}
@@ -93,7 +93,7 @@ func CheckNetworkPolicyExist() (bool, error) {
 		return true, err
 	}
 	if value := ns.Labels[conf.LABEL_ALLOW_ALL]; value == "true" {
-		klog.V(3).Info("[jump]: calico networkpolicy init already")
+		klog.Infoln("[jump]: calico networkpolicy init already")
 		return true, nil
 	}
 	return false, nil
@@ -107,7 +107,7 @@ func CalicoNetworkPolicyInit() error {
 	3.给节点打上标签
 	4.初始化网络策略
 	**/
-	klog.V(3).Info("CalicoNetworkPolicyInit...")
+	klog.Infoln("CalicoNetworkPolicyInit...")
 	// 1.校验是否已初始化
 	if npExist, err := CheckNetworkPolicyExist(); npExist {
 		return err
@@ -160,7 +160,7 @@ func InitGlobalNetworkPolicy() {
 }
 
 func OpenNamespaceNetworkPolicy(name string) (int, error) {
-	klog.V(3).Infof("open ns [%s] networkpolicy", name)
+	klog.Infof("open ns [%s] networkpolicy", name)
 	//1.添加global-internal-allow，如果已存在则跳过
 	gnp, err := ClientV3.GlobalNetworkPolicies().Get(Ctx, conf.GLOBAL_INTERNAL_ALLOW, options.GetOptions{})
 	if err != nil {
@@ -200,7 +200,7 @@ func OpenNamespaceNetworkPolicy(name string) (int, error) {
 }
 
 func CloseNamespaceNetworkPolicy(name string) (int, error) {
-	klog.V(3).Info("close ns [%s] networkpolicy", name)
+	klog.Infof("close ns [%s] networkpolicy", name)
 	//1.global-internal-allow删除一项
 	gnp, err := ClientV3.GlobalNetworkPolicies().Get(Ctx, conf.GLOBAL_INTERNAL_ALLOW, options.GetOptions{})
 	if err != nil {
@@ -235,7 +235,7 @@ func CloseNamespaceNetworkPolicy(name string) (int, error) {
 }
 
 func AddNetsBlackList(net string) (int, error) {
-	klog.V(3).Info("add nets blacklist: [%s]", net)
+	klog.Infof("add nets blacklist: [%s]", net)
 	/**1.  TODO: check net
 		ip/cidr格式是否合法
 		是否禁止输入的网段？0.0.0.0/0？
@@ -248,7 +248,7 @@ func AddNetsBlackList(net string) (int, error) {
 	}
 	for _, v := range gns.Spec.Nets {
 		if v == net {
-			klog.V(3).Info("net [%s] exist in %s", net, conf.AREA_GLOBAL_EGRESS_DENY)
+			klog.Infof("net [%s] exist in %s", net, conf.AREA_GLOBAL_EGRESS_DENY)
 			return e.SUCCESS, nil
 		}
 	}
@@ -262,7 +262,7 @@ func AddNetsBlackList(net string) (int, error) {
 }
 
 func DeleteNetsBlackList(net string) (int, error) {
-	klog.V(3).Info("del nets blacklist: [%s]", net)
+	klog.Infof("del nets blacklist: [%s]", net)
 	/**1.  TODO: check net
 		ip/cidr格式是否合法
 		是否禁止输入的网段？0.0.0.0/0？
@@ -282,7 +282,7 @@ func DeleteNetsBlackList(net string) (int, error) {
 		}
 	}
 	if !flag {
-		klog.V(3).Info("[jump]: net [%s] not exist in %s", net, conf.AREA_GLOBAL_EGRESS_DENY)
+		klog.Infof("[jump]: net [%s] not exist in %s", net, conf.AREA_GLOBAL_EGRESS_DENY)
 		return e.SUCCESS, nil
 	}
 	_, err = ClientV3.GlobalNetworkSets().Update(Ctx, gns, options.SetOptions{})
@@ -330,7 +330,7 @@ func DeleteAllowAllNamespace(name string) (int, error) {
 			return e.ERROR_INTERNAL_SERVER_ERROR, err
 		}
 	} else {
-		klog.V(3).Info("[jump]: label %s not exist in ns %s", conf.LABEL_ALLOW_ALL, name)
+		klog.Infof("[jump]: label %s not exist in ns %s", conf.LABEL_ALLOW_ALL, name)
 		return e.SUCCESS, nil
 	}
 	return e.SUCCESS, nil

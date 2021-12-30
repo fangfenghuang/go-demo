@@ -5,14 +5,13 @@ const LISTENPORT = "40080"
 const STATIC_PATH = "/"
 
 var (
-	EtcdEndpoints  = "10.19.0.13:2379"
-	EtcdKeyFile    = "./conf/ssl/etcd-key.pem"
-	EtcdCertFile   = "./conf/ssl/etcd.pem"
-	EtcdCACertFile = "./conf/ssl/ca.pem"
-)
-
-var (
-	KubeconfigPath = "./conf/kube/config"
+	EtcdEndpoints      = "10.19.0.13:2379"
+	EtcdKeyFile        = "./conf/ssl/etcd-key.pem"
+	EtcdCertFile       = "./conf/ssl/etcd.pem"
+	EtcdCACertFile     = "./conf/ssl/ca.pem"
+	KubeconfigPath     = "./conf/kube/config"
+	LeaseLockNamespace = "kube-system"
+	LeaseLockName      = "go-demo"
 )
 
 const (
