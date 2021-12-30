@@ -38,7 +38,7 @@ func CalicoSetup() error {
 		return err
 	}
 	Ctx = context.Background()
-	klog.V(3).Infof("setup calico client succeed")
+	klog.Infoln("setup calico client succeed")
 	return nil
 }
 
@@ -54,7 +54,7 @@ func GetNetworkPolicie(name, namespace string) *v3.NetworkPolicy {
 }
 
 func ParseAndCreateGlobalNetworkPolicy(fp string) error {
-	klog.V(3).Infof("parse gnp yaml:%s ", fp)
+	klog.Infof("parse gnp yaml:%s ", fp)
 	data, err := ioutil.ReadFile(fp)
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func ParseAndCreateGlobalNetworkPolicy(fp string) error {
 }
 
 func ParseAndCreateGlobalNetworkSet(file string) error {
-	klog.V(3).Infof("parse gns yaml:%s ", file)
+	klog.Infof("parse gns yaml:%s ", file)
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err

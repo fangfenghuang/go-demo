@@ -11,7 +11,7 @@ import (
 
 // 删除np
 func DeleteNetworkPolicy(namespace, name string) (int, error) {
-	klog.V(3).Info("del np [%s/%s]...", namespace, name)
+	klog.Infof("del np [%s/%s]...", namespace, name)
 	_, err := ClientV3.NetworkPolicies().Delete(Ctx, namespace, name, options.DeleteOptions{})
 	if err != nil {
 		klog.Errorln(err)
@@ -22,7 +22,7 @@ func DeleteNetworkPolicy(namespace, name string) (int, error) {
 
 // 添加np
 func CreateNetworkPolicy(policy *v3.NetworkPolicy) (int, error) {
-	klog.V(3).Info("Add np [%s/%s]...", policy.Name, policy.Namespace)
+	klog.Infof("Add np [%s/%s]...", policy.Name, policy.Namespace)
 	ffmt.Puts(policy)
 
 	_, err := ClientV3.NetworkPolicies().Create(Ctx, policy, options.SetOptions{})
