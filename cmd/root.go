@@ -10,7 +10,6 @@ import (
 
 	"go-demo/pkg/calico"
 	"go-demo/pkg/k8sclient"
-	"go-demo/router"
 
 	"go-demo/conf"
 
@@ -23,13 +22,6 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
-func Execute() {
-	if err := LeaderelectionCmd.Execute(); err != nil {
-		klog.Errorln(os.Stderr, err)
-		os.Exit(1)
-	}
-}
 
 var LeaseLockID string
 
@@ -117,7 +109,7 @@ var RootCmd = &cobra.Command{
 		klog.Infoln("service start...")
 		initializaton()
 		test()
-		router.InitRouter()
+		//router.InitRouter()
 	},
 }
 
@@ -130,4 +122,13 @@ func initializaton() {
 // add test func
 func test() {
 	klog.Infoln("test...")
+	k8sclient.Test()
+}
+
+func Execute() {
+	//if err := LeaderelectionCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
+		klog.Errorln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
